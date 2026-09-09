@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {createWordController, OfficierToolbar} from '../src/index.js';
+import {createWordController, OfficierToolbar} from '../dist/index.js';
 
 function fixture() {
   const callbacks = new Map();

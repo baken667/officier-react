@@ -1,19 +1,57 @@
 {
   "name": "@baken667/officier-react",
   "version": "0.1.0-alpha.0",
-  "description": "Experimental React controls and direct command bridge for an initialized ONLYOFFICE word engine; no editor loader yet",
+  "description": "Experimental React controls, runtime manifest loader, and direct command bridge for the Officier word engine",
   "type": "module",
   "license": "SEE LICENSE IN LICENSE",
   "exports": {
-    ".": {"types": "./src/index.d.ts", "import": "./src/index.js"},
-    "./controller": {"types": "./src/controller.d.ts", "import": "./src/controller.js"}
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./controller": {
+      "types": "./dist/controller.d.ts",
+      "import": "./dist/controller.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime.d.ts",
+      "import": "./dist/runtime.js"
+    }
   },
-  "files": ["src", "LICENSE", "README.md", "ARCHITECTURE.md"],
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md",
+    "ARCHITECTURE.md",
+    "PLAN.md"
+  ],
   "sideEffects": false,
-  "peerDependencies": {"react": ">=18 <20"},
-  "devDependencies": {"react": "19.2.0", "react-dom": "19.2.0"},
-  "scripts": {"test": "node --test tests/*.test.js", "prepublishOnly": "npm test"},
-  "repository": {"type": "git", "url": "https://github.com/baken667/officier-react.git"},
-  "publishConfig": {"registry": "https://npm.pkg.github.com", "tag": "alpha"},
-  "engines": {"node": ">=22"}
+  "peerDependencies": {
+    "react": ">=18 <20"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "typescript": "7.0.2"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "pnpm run build && node --test tests/*.test.js",
+    "pack:dry": "pnpm pack --dry-run",
+    "prepublishOnly": "pnpm test"
+  },
+  "packageManager": "pnpm@12.3.4",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/baken667/officier-react.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "tag": "alpha"
+  },
+  "engines": {
+    "node": ">=22"
+  }
 }
