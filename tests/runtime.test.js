@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {
+  createOfficierWopiSession,
   createMountedWordEditor,
   loadOfficierRuntime,
   OfficierEditor,
@@ -82,6 +83,34 @@ test('loads runtime manifest from document server URL', async () => {
   assert.deepEqual(requests, ['https://docs.example/officier/runtime/manifest.json']);
   assert.equal(runtime.manifest.buildId, 'officier-test');
   assert.equal(runtime.manifest.capabilities.noIframe, true);
+});
+
+test('creates WOPI session through the Officier JSON endpoint', async () => {
+  const requests = [];
+  const created = await createOfficierWopiSession({
+    documentServerUrl: 'https://docs.example/officier/',
+    wopiSrc: 'https://app.example/wopi/files/1',
+    accessToken: 'secret-token',
+    accessTokenTtl: 1234,
+    userSessionId: 'user-session',
+    lang: 'ru',
+    docsApiConfig: {editorConfig: {lang: 'ru'}},
+    fetch: async (url, init) => {
+      requests.push({url, init});
+      return Response.json(session());
+    }
+  });
+
+  assert.equal(created.id, 'session-1');
+  assert.equal(
+    requests[0].url,
+    'https://docs.example/officier/sessions/wopi/word/edit?wopisrc=https%3A%2F%2Fapp.example%2Fwopi%2Ffiles%2F1&usid=user-session&lang=ru'
+  );
+  assert.equal(requests[0].init.method, 'POST');
+  assert.equal(requests[0].init.headers['Content-Type'], 'application/x-www-form-urlencoded');
+  assert.equal(requests[0].init.body.get('access_token'), 'secret-token');
+  assert.equal(requests[0].init.body.get('access_token_ttl'), '1234');
+  assert.equal(requests[0].init.body.get('docs_api_config'), '{"editorConfig":{"lang":"ru"}}');
 });
 
 test('validates manifest shape before exposing runtime', async () => {

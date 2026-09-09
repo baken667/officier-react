@@ -25,7 +25,7 @@ export interface OfficierWopiSession {
   readonly id: string;
   readonly mode: 'wopi';
   readonly documentTitle: string;
-  readonly fileType: 'docx';
+  readonly fileType: string;
   readonly canEdit: boolean;
   readonly bootstrap: unknown;
 }
@@ -81,6 +81,22 @@ export interface LoadOfficierRuntimeOptions {
   readonly fetch?: typeof fetch;
   readonly document?: Document;
   readonly adapter?: OfficierWordRuntimeAdapter;
+  readonly signal?: AbortSignal;
+}
+
+export interface CreateOfficierWopiSessionOptions {
+  readonly documentServerUrl: string | URL;
+  readonly wopiSrc: string | URL;
+  readonly accessToken: string;
+  readonly accessTokenTtl?: number;
+  readonly documentType?: 'word';
+  readonly mode?: 'edit' | 'view';
+  readonly userSessionId?: string;
+  readonly lang?: string;
+  readonly ui?: string;
+  readonly sc?: string;
+  readonly docsApiConfig?: unknown;
+  readonly fetch?: typeof fetch;
   readonly signal?: AbortSignal;
 }
 
@@ -169,6 +185,90 @@ function parseManifest(value: unknown): OfficierRuntimeManifest {
       })
     } : {})
   });
+}
+
+function parseWopiSession(value: unknown): OfficierWopiSession {
+  if (!isRecord(value)) {
+    throw new OfficierError('OFFICIER_RUNTIME_LOAD_FAILED', 'WOPI session response must be an object');
+  }
+
+  if (typeof value.id !== 'string' || value.id.length === 0) {
+    throw new OfficierError('OFFICIER_RUNTIME_LOAD_FAILED', 'WOPI session response must have an id');
+  }
+
+  if (value.mode !== 'wopi') {
+    throw new OfficierError('OFFICIER_RUNTIME_LOAD_FAILED', 'WOPI session response mode must be wopi');
+  }
+
+  if (typeof value.documentTitle !== 'string') {
+    throw new OfficierError('OFFICIER_RUNTIME_LOAD_FAILED', 'WOPI session response must have a documentTitle');
+  }
+
+  if (typeof value.fileType !== 'string' || value.fileType.length === 0) {
+    throw new OfficierError('OFFICIER_RUNTIME_LOAD_FAILED', 'WOPI session response must have a fileType');
+  }
+
+  if (typeof value.canEdit !== 'boolean') {
+    throw new OfficierError('OFFICIER_RUNTIME_LOAD_FAILED', 'WOPI session response must have canEdit');
+  }
+
+  return Object.freeze({
+    id: value.id,
+    mode: 'wopi',
+    documentTitle: value.documentTitle,
+    fileType: value.fileType,
+    canEdit: value.canEdit,
+    bootstrap: value.bootstrap
+  });
+}
+
+function appendQuery(params: URLSearchParams, key: string, value: string | URL | undefined): void {
+  if (value !== undefined) params.set(key, value.toString());
+}
+
+export async function createOfficierWopiSession(
+  options: CreateOfficierWopiSessionOptions
+): Promise<OfficierWopiSession> {
+  abortIfNeeded(options.signal);
+
+  const base = runtimeBaseUrl(options.documentServerUrl);
+  const documentType = options.documentType ?? 'word';
+  const mode = options.mode ?? 'edit';
+  const url = new URL(`sessions/wopi/${documentType}/${mode}`, base);
+  appendQuery(url.searchParams, 'wopisrc', options.wopiSrc);
+  appendQuery(url.searchParams, 'usid', options.userSessionId);
+  appendQuery(url.searchParams, 'lang', options.lang);
+  appendQuery(url.searchParams, 'ui', options.ui);
+  appendQuery(url.searchParams, 'sc', options.sc);
+
+  const body = new URLSearchParams();
+  body.set('access_token', options.accessToken);
+  if (options.accessTokenTtl !== undefined) body.set('access_token_ttl', String(options.accessTokenTtl));
+  if (options.docsApiConfig !== undefined) body.set('docs_api_config', JSON.stringify(options.docsApiConfig));
+
+  const fetchSession = options.fetch ?? globalThis.fetch;
+  if (typeof fetchSession !== 'function') {
+    throw new OfficierError('OFFICIER_RUNTIME_LOAD_FAILED', 'A fetch implementation is required');
+  }
+
+  let response: Response;
+  try {
+    const requestInit: RequestInit = {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body,
+      ...(options.signal ? {signal: options.signal} : {})
+    };
+    response = await fetchSession(url.toString(), requestInit);
+  } catch (error) {
+    throw new OfficierError('OFFICIER_RUNTIME_LOAD_FAILED', 'Failed to create Officier WOPI session', {cause: error});
+  }
+
+  if (!response.ok) {
+    throw new OfficierError('OFFICIER_RUNTIME_LOAD_FAILED', `Officier WOPI session returned HTTP ${response.status}`);
+  }
+
+  return parseWopiSession(await response.json());
 }
 
 function loadElement(element: HTMLElement, parent: HTMLElement, signal: AbortSignal | undefined): Promise<void> {

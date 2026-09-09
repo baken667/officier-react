@@ -164,6 +164,8 @@ pnpm и Bun.
 
 - Извлечь общую функцию подготовки сессии из getEditorHtml и добавить JSON endpoint.
   Штатный HTML endpoint использует ту же функцию, чтобы не дублировать WOPI-логику.
+  Серверный endpoint `/officier/sessions/wopi/:documentType/:mode` и клиентский
+  helper `createOfficierWopiSession()` уже добавлены.
 - Сопоставить результат подготовки с конфигурацией прямого SDK; проверить
   идентичность документа/tenant, view/edit, lock failure, токен и срок действия.
 - Создать демонстрационный WOPI host: CheckFileInfo, GetFile, PutFile, Lock,

@@ -13,11 +13,13 @@ export type {
   OfficierEditorStatus
 } from './editor.js';
 export {
+  createOfficierWopiSession,
   createMountedWordEditor,
   loadOfficierRuntime,
   OfficierError
 } from './runtime.js';
 export type {
+  CreateOfficierWopiSessionOptions,
   LoadOfficierRuntimeOptions,
   MountedOfficierWordEditor,
   OfficierErrorCode,

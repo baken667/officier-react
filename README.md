@@ -20,16 +20,15 @@ DocumentServer. Без него компонент возвращает typed er
 Минимальный lifecycle редактора:
 
 ```tsx
-import {OfficierEditor, type OfficierWopiSession} from '@baken667/officier-react';
+import {OfficierEditor, createOfficierWopiSession} from '@baken667/officier-react';
 
-const session: OfficierWopiSession = {
-  id: 'session-id-from-backend',
-  mode: 'wopi',
-  documentTitle: 'Document.docx',
-  fileType: 'docx',
-  canEdit: true,
-  bootstrap: {}
-};
+const session = await createOfficierWopiSession({
+  documentServerUrl: '/officier/',
+  wopiSrc: 'https://app.example/wopi/files/1',
+  accessToken: 'short-lived-token-from-backend',
+  accessTokenTtl: Date.now() + 60 * 60 * 1000,
+  lang: 'ru'
+});
 
 export function Editor() {
   return (
@@ -47,6 +46,10 @@ export function Editor() {
 `/officier/runtime/manifest.json`. Manifest перечисляет CSS/JS ассеты прямого
 runtime. Загруженный runtime должен предоставить `window.OfficierDirectRuntime`
 с методом `mountWord(...)`; этот серверный слой будет следующим этапом реализации.
+
+`createOfficierWopiSession()` вызывает серверный endpoint
+`POST /officier/sessions/wopi/word/edit?wopisrc=...` и получает JSON bootstrap,
+переиспользуя ту же WOPI-подготовку, что и стандартная ONLYOFFICE host page.
 
 После установки пакета приложение подключает панель к контроллеру:
 
