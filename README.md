@@ -60,12 +60,13 @@ npm test
 npm pack --dry-run
 ```
 
-Подготовлен пакет `@baken667/officier-react` версии `0.1.0-alpha.0` и ручной workflow
-**Publish alpha package** для GitHub Packages. Публикация не запускается обычным push.
-До первого запуска workflow версия в реестре отсутствует. Workflow использует
+Пакет `@baken667/officier-react@0.1.0-alpha.0` опубликован в GitHub Packages
+([workflow публикации](https://github.com/baken667/officier-react/actions/runs/34324910219)).
+Для следующих версий увеличьте version и запустите ручной workflow
+**Publish alpha package**. Публикация не запускается обычным push. Workflow использует
 `GITHUB_TOKEN`, отдельный секрет для публикации не требуется.
 
-После публикации для установки потребуется доступ к пакету в GitHub Packages:
+Для установки потребуется доступ к пакету в GitHub Packages:
 
 ```sh
 npm login --scope=@baken667 --auth-type=legacy --registry=https://npm.pkg.github.com
