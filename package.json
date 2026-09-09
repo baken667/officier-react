@@ -1,0 +1,19 @@
+{
+  "name": "@baken667/officier-react",
+  "version": "0.1.0-alpha.0",
+  "description": "Experimental React controls and direct command bridge for an initialized ONLYOFFICE word engine; no editor loader yet",
+  "type": "module",
+  "license": "SEE LICENSE IN LICENSE",
+  "exports": {
+    ".": {"types": "./src/index.d.ts", "import": "./src/index.js"},
+    "./controller": {"types": "./src/controller.d.ts", "import": "./src/controller.js"}
+  },
+  "files": ["src", "LICENSE", "README.md", "ARCHITECTURE.md"],
+  "sideEffects": false,
+  "peerDependencies": {"react": ">=18 <20"},
+  "devDependencies": {"react": "19.2.0", "react-dom": "19.2.0"},
+  "scripts": {"test": "node --test tests/*.test.js", "prepublishOnly": "npm test"},
+  "repository": {"type": "git", "url": "https://github.com/baken667/officier-react.git"},
+  "publishConfig": {"registry": "https://npm.pkg.github.com", "tag": "alpha"},
+  "engines": {"node": ">=22"}
+}
