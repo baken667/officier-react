@@ -5,6 +5,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import {
   createOfficierWopiSession,
   createMountedWordEditor,
+  isOfficierErrorCode,
   loadOfficierRuntime,
   OfficierEditor,
   OfficierError
@@ -121,6 +122,11 @@ test('validates manifest shape before exposing runtime', async () => {
     }),
     error => error instanceof OfficierError && error.code === 'OFFICIER_BAD_MANIFEST'
   );
+});
+
+test('recognizes direct SDK bridge error code', () => {
+  assert.equal(isOfficierErrorCode('OFFICIER_DIRECT_SDK_BRIDGE_MISSING'), true);
+  assert.equal(isOfficierErrorCode('OFFICIER_UNKNOWN'), false);
 });
 
 test('loads manifest assets in order against the runtime base URL', async () => {

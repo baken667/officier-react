@@ -58,6 +58,7 @@ export interface OfficierRuntime {
 export type OfficierErrorCode =
   | 'OFFICIER_ABORTED'
   | 'OFFICIER_BAD_MANIFEST'
+  | 'OFFICIER_DIRECT_SDK_BRIDGE_MISSING'
   | 'OFFICIER_EDITOR_ALREADY_MOUNTED'
   | 'OFFICIER_IFRAME_DETECTED'
   | 'OFFICIER_RUNTIME_LOAD_FAILED'
@@ -126,6 +127,16 @@ function runtimeBaseUrl(documentServerUrl: string | URL): URL {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+export function isOfficierErrorCode(value: unknown): value is OfficierErrorCode {
+  return value === 'OFFICIER_ABORTED'
+    || value === 'OFFICIER_BAD_MANIFEST'
+    || value === 'OFFICIER_DIRECT_SDK_BRIDGE_MISSING'
+    || value === 'OFFICIER_EDITOR_ALREADY_MOUNTED'
+    || value === 'OFFICIER_IFRAME_DETECTED'
+    || value === 'OFFICIER_RUNTIME_LOAD_FAILED'
+    || value === 'OFFICIER_SDK_ADAPTER_MISSING';
 }
 
 function parseAsset(value: unknown, index: number): OfficierRuntimeAsset {

@@ -18,6 +18,7 @@ import {
   type OfficierWopiSession,
   type OfficierWordRuntimeAdapter
 } from './runtime.js';
+import {isOfficierErrorCode} from './runtime.js';
 
 export type OfficierEditorStatus = 'idle' | 'loading' | 'ready' | 'error';
 
@@ -45,6 +46,19 @@ export interface OfficierEditorProps {
 
 function toOfficierError(error: unknown): OfficierError {
   if (error instanceof OfficierError) return error;
+  if (typeof error === 'object' && error !== null) {
+    const candidate = error as {code?: unknown; message?: unknown};
+    if (!isOfficierErrorCode(candidate.code)) {
+      return new OfficierError('OFFICIER_RUNTIME_LOAD_FAILED', 'Officier editor failed to start', {cause: error});
+    }
+    return new OfficierError(
+      candidate.code,
+      typeof candidate.message === 'string'
+        ? candidate.message
+        : 'Officier editor failed to start',
+      {cause: error}
+    );
+  }
   return new OfficierError('OFFICIER_RUNTIME_LOAD_FAILED', 'Officier editor failed to start', {cause: error});
 }
 

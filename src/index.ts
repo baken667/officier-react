@@ -15,6 +15,7 @@ export type {
 export {
   createOfficierWopiSession,
   createMountedWordEditor,
+  isOfficierErrorCode,
   loadOfficierRuntime,
   OfficierError
 } from './runtime.js';

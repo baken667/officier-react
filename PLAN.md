@@ -1,6 +1,6 @@
 # План officier-react: React UI, движок с DocumentServer, WOPI
 
-Дата исследования: 2026-09-09. Статус: Stage 0 готов; Stage 1 начат с typed manifest loader и React lifecycle.
+Дата исследования: 2026-09-09. Статус: Stage 0 готов; Stage 1 начат с typed manifest loader, React lifecycle и первым direct runtime asset.
 
 ## Цель и принятые решения
 
@@ -142,8 +142,8 @@ pnpm и Bun.
 
 - Составить точный список ассетов из работающей сборки; создать versioned manifest.
   Клиентский контракт `runtime/manifest.json`, loader и серверный endpoint
-  `/officier/runtime/manifest.json` уже добавлены. Список assets пока пустой,
-  потому что direct SDK adapter ещё не собран.
+  `/officier/runtime/manifest.json` уже добавлены. Сервер уже отдаёт первый
+  `runtime/direct-word-adapter.js`; SDK bridge внутри него ещё не собран.
 - Запустить SDK в обычном div тестового React + TypeScript приложения.
   React lifecycle `<OfficierEditor>` уже добавлен; прямой SDK adapter ещё нужен.
 - Вынести минимальный запуск из Main.js, подать тестовую конфигурацию документа.

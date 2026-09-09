@@ -6,10 +6,11 @@ loader для прямого SDK-монтажа.
 
 **Текущее состояние:** `<OfficierEditor>` уже владеет React lifecycle, загружает
 `runtime/manifest.json`, подключает ассеты и ищет direct adapter
-`window.OfficierDirectRuntime`. Сам adapter, который реально запускает ONLYOFFICE
-SDK в DOM-контейнере и открывает DOCX, ещё не реализован на стороне Officier
-DocumentServer. Без него компонент возвращает typed error
-`OFFICIER_SDK_ADAPTER_MISSING`.
+`window.OfficierDirectRuntime`. Officier DocumentServer уже отдаёт первый runtime
+asset, который создаёт этот adapter. Следующий слой — подключить внутри него
+настоящий SDK bridge для запуска ONLYOFFICE SDK в DOM-контейнере и открытия DOCX.
+Пока этот слой не готов, компонент возвращает typed error
+`OFFICIER_DIRECT_SDK_BRIDGE_MISSING`.
 
 Основа движка — [Officier / ONLYOFFICE](https://github.com/baken667/officier).
 Исходный ONLYOFFICE разработан Ascensio System SIA; Officier — независимая модификация.
@@ -44,8 +45,8 @@ export function Editor() {
 
 `documentServerUrl="/officier/"` означает, что пакет запросит
 `/officier/runtime/manifest.json`. Manifest перечисляет CSS/JS ассеты прямого
-runtime. Загруженный runtime должен предоставить `window.OfficierDirectRuntime`
-с методом `mountWord(...)`; этот серверный слой будет следующим этапом реализации.
+runtime. Загруженный runtime предоставляет `window.OfficierDirectRuntime`
+с методом `mountWord(...)`; его SDK bridge будет следующим этапом реализации.
 
 `createOfficierWopiSession()` вызывает серверный endpoint
 `POST /officier/sessions/wopi/word/edit?wopisrc=...` и получает JSON bootstrap,
