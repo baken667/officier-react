@@ -142,7 +142,7 @@ pnpm и Bun.
 
 - Составить точный список ассетов из работающей сборки; создать versioned manifest.
   Клиентский контракт `runtime/manifest.json`, loader и серверный endpoint
-  `/officier/runtime/manifest.json` уже добавлены. Сервер отдаёт socket.io,
+  `/officier/runtime/manifest.json` уже добавлены. Сервер отдаёт jQuery, XRegExp, socket.io,
   `sdkjs/word/sdk-all-min.js` и `runtime/direct-word-adapter.js`; adapter уже
   создаёт `Asc.asc_docs_api`, подаёт WOPI bootstrap в `Asc.asc_CDocInfo` и
   монтирует SDK в DOM-контейнер React-приложения.

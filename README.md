@@ -7,7 +7,7 @@ loader для прямого SDK-монтажа.
 **Текущее состояние:** `<OfficierEditor>` уже владеет React lifecycle, загружает
 `runtime/manifest.json`, подключает runtime assets DocumentServer и вызывает
 `window.OfficierDirectRuntime.mountWord(...)`. Officier DocumentServer отдаёт
-thin direct bridge: он загружает socket.io + SDKJS, создаёт `Asc.asc_docs_api`
+thin direct bridge: он загружает jQuery + XRegExp + socket.io + SDKJS, создаёт `Asc.asc_docs_api`
 в DOM-контейнере React-приложения и подаёт WOPI bootstrap в `Asc.asc_CDocInfo`.
 Это экспериментальный путь; browser smoke пока проверяет загрузку direct runtime
 assets без iframe, а полный DOCX open/edit/save без iframe остаётся следующим
@@ -46,7 +46,7 @@ export function Editor() {
 
 `documentServerUrl="/officier/"` означает, что пакет запросит
 `/officier/runtime/manifest.json`. Manifest перечисляет JS assets прямого
-runtime: socket.io, `sdkjs/word/sdk-all-min.js` и `runtime/direct-word-adapter.js`.
+runtime: jQuery, XRegExp, socket.io, `sdkjs/word/sdk-all-min.js` и `runtime/direct-word-adapter.js`.
 Загруженный runtime предоставляет `window.OfficierDirectRuntime` с методом
 `mountWord(...)`, который монтирует низкоуровневый Word SDK в переданный DOM-узел.
 
