@@ -5,12 +5,13 @@
 loader для прямого SDK-монтажа.
 
 **Текущее состояние:** `<OfficierEditor>` уже владеет React lifecycle, загружает
-`runtime/manifest.json`, подключает ассеты и ищет direct adapter
-`window.OfficierDirectRuntime`. Officier DocumentServer уже отдаёт первый runtime
-asset, который создаёт этот adapter. Следующий слой — подключить внутри него
-настоящий SDK bridge для запуска ONLYOFFICE SDK в DOM-контейнере и открытия DOCX.
-Пока этот слой не готов, компонент возвращает typed error
-`OFFICIER_DIRECT_SDK_BRIDGE_MISSING`.
+`runtime/manifest.json`, подключает runtime assets DocumentServer и вызывает
+`window.OfficierDirectRuntime.mountWord(...)`. Officier DocumentServer отдаёт
+thin direct bridge: он загружает socket.io + SDKJS, создаёт `Asc.asc_docs_api`
+в DOM-контейнере React-приложения и подаёт WOPI bootstrap в `Asc.asc_CDocInfo`.
+Это экспериментальный путь; browser smoke пока проверяет загрузку direct runtime
+assets без iframe, а полный DOCX open/edit/save без iframe остаётся следующим
+подтверждаемым рубежом.
 
 Основа движка — [Officier / ONLYOFFICE](https://github.com/baken667/officier).
 Исходный ONLYOFFICE разработан Ascensio System SIA; Officier — независимая модификация.
@@ -44,9 +45,10 @@ export function Editor() {
 ```
 
 `documentServerUrl="/officier/"` означает, что пакет запросит
-`/officier/runtime/manifest.json`. Manifest перечисляет CSS/JS ассеты прямого
-runtime. Загруженный runtime предоставляет `window.OfficierDirectRuntime`
-с методом `mountWord(...)`; его SDK bridge будет следующим этапом реализации.
+`/officier/runtime/manifest.json`. Manifest перечисляет JS assets прямого
+runtime: socket.io, `sdkjs/word/sdk-all-min.js` и `runtime/direct-word-adapter.js`.
+Загруженный runtime предоставляет `window.OfficierDirectRuntime` с методом
+`mountWord(...)`, который монтирует низкоуровневый Word SDK в переданный DOM-узел.
 
 `createOfficierWopiSession()` вызывает серверный endpoint
 `POST /officier/sessions/wopi/word/edit?wopisrc=...` и получает JSON bootstrap,
@@ -125,6 +127,8 @@ GitHub требует токен с `read:packages` даже для публич
 См. [документацию реестра](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry).
 
 Unit-тесты используют mock Word API и проверяют команды, доступность операций,
-подписки, manifest loader, single-mount guard и SSR панели. Они не проверяют
-загрузку DOCX или работу настоящего SDK. План runtime и критерии готовности:
+подписки, manifest loader, single-mount guard и SSR панели. Серверный smoke
+дополнительно проверяет загрузку direct runtime assets в браузере без iframe.
+Полное открытие DOCX через direct bridge ещё нужно закрепить отдельным browser
+тестом. План runtime и критерии готовности:
 [ARCHITECTURE.md](ARCHITECTURE.md).

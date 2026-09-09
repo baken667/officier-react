@@ -1,6 +1,6 @@
 # План officier-react: React UI, движок с DocumentServer, WOPI
 
-Дата исследования: 2026-09-09. Статус: Stage 0 готов; Stage 1 начат с typed manifest loader, React lifecycle и первым direct runtime asset.
+Дата исследования: 2026-09-09. Статус: Stage 0 готов; Stage 1 идёт: typed manifest loader, React lifecycle, WOPI JSON session endpoint и thin direct SDK bridge добавлены.
 
 ## Цель и принятые решения
 
@@ -17,9 +17,9 @@ TypeScript strict для нового кода; pnpm для разработки
 Команды npm, npx и yarn не используются.
 
 Это расширение нашего Officier, а не обещание совместимости без iframe с любым
-штатным ONLYOFFICE DocumentServer. Текущий контейнер Officier 0.1.0 ещё не содержит
-описанных ниже manifest/bootstrap endpoint и адаптера. Его проверка DOCX через
-Docs API не доказывает готовность нового пути WOPI.
+штатным ONLYOFFICE DocumentServer. Контейнер Officier 0.1.1-alpha.3 уже содержит manifest/bootstrap endpoint и
+первый direct runtime asset. Следующая сборка должна подтвердить thin direct SDK
+bridge; проверка DOCX через обычный Docs API остаётся отдельным smoke-контролем.
 
 ## Что показало исследование
 
@@ -142,10 +142,13 @@ pnpm и Bun.
 
 - Составить точный список ассетов из работающей сборки; создать versioned manifest.
   Клиентский контракт `runtime/manifest.json`, loader и серверный endpoint
-  `/officier/runtime/manifest.json` уже добавлены. Сервер уже отдаёт первый
-  `runtime/direct-word-adapter.js`; SDK bridge внутри него ещё не собран.
+  `/officier/runtime/manifest.json` уже добавлены. Сервер отдаёт socket.io,
+  `sdkjs/word/sdk-all-min.js` и `runtime/direct-word-adapter.js`; adapter уже
+  создаёт `Asc.asc_docs_api`, подаёт WOPI bootstrap в `Asc.asc_CDocInfo` и
+  монтирует SDK в DOM-контейнер React-приложения.
 - Запустить SDK в обычном div тестового React + TypeScript приложения.
-  React lifecycle `<OfficierEditor>` уже добавлен; прямой SDK adapter ещё нужен.
+  React lifecycle `<OfficierEditor>` и прямой thin SDK adapter уже добавлены;
+  следующий шаг — browser test с настоящим WOPI DOCX open/edit/save без iframe.
 - Вынести минимальный запуск из Main.js, подать тестовую конфигурацию документа.
 - Проверить canvas, текстовый ввод/IME, выделение, фокус toolbar, resize и undo/redo.
 - Найти и устранить необходимые зависимости от parent window, Gateway,
